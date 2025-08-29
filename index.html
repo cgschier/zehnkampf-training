@@ -234,10 +234,45 @@
             color: white;
             text-align: center;
             transition: transform 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
 
         .event-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .event-card:hover::before {
+            left: 100%;
+        }
+
+        .event-count {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
         }
 
         .event-title {
@@ -295,8 +330,8 @@
             padding: 2rem;
             border-radius: 15px;
             width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
+            max-width: 700px;
+            max-height: 85vh;
             overflow-y: auto;
         }
 
@@ -319,6 +354,113 @@
 
         .close-btn:hover {
             color: #ef4444;
+        }
+
+        .diary-form {
+            background: #f0f9ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            border: 2px solid #0ea5e9;
+        }
+
+        .diary-form h4 {
+            color: #0c4a6e;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .mood-selector {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .mood-btn {
+            background: none;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mood-btn:hover {
+            transform: scale(1.1);
+            border-color: #0ea5e9;
+        }
+
+        .mood-btn.selected {
+            border-color: #0ea5e9;
+            background: rgba(14, 165, 233, 0.1);
+            transform: scale(1.15);
+        }
+
+        .diary-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .diary-textarea:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .diary-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+            transform: translateY(-1px);
+        }
+
+        .training-diary {
+            background: rgba(14, 165, 233, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border-left: 4px solid #0ea5e9;
+        }
+
+        .diary-mood {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .diary-text {
+            font-style: italic;
+            color: #475569;
+            margin-top: 0.5rem;
         }
 
         @media (max-width: 768px) {
@@ -357,43 +499,53 @@
                 <p style="margin: 1rem 0;">Verwalte dein Training professionell mit detaillierter Planung und Dokumentation.</p>
                 
                 <div class="decathlon-events">
-                    <div class="event-card">
+                    <div class="event-card" data-event="100m">
+                        <div class="event-count" id="count-100m">0</div>
                         <div class="event-title">100m Sprint</div>
                         <div>Explosive Schnelligkeit</div>
                     </div>
-                    <div class="event-card">
+                    <div class="event-card" data-event="weitsprung">
+                        <div class="event-count" id="count-weitsprung">0</div>
                         <div class="event-title">Weitsprung</div>
                         <div>Anlauf & Technik</div>
                     </div>
-                    <div class="event-card">
+                    <div class="event-card" data-event="kugel">
+                        <div class="event-count" id="count-kugel">0</div>
                         <div class="event-title">Kugelstoßen</div>
                         <div>Kraft & Koordination</div>
                     </div>
-                    <div class="event-card">
+                    <div class="event-card" data-event="hochsprung">
+                        <div class="event-count" id="count-hochsprung">0</div>
                         <div class="event-title">Hochsprung</div>
                         <div>Technik & Sprungkraft</div>
                     </div>
-                    <div class="event-card">
+                    <div class="event-card" data-event="400m">
+                        <div class="event-count" id="count-400m">0</div>
                         <div class="event-title">400m Lauf</div>
                         <div>Ausdauer & Tempo</div>
                     </div>
-                    <div class="event-card">
+                    <div class="event-card" data-event="huerden">
+                        <div class="event-count" id="count-huerden">0</div>
                         <div class="event-title">110m Hürden</div>
                         <div>Rhythmus & Technik</div>
                     </div>
-                    <div class="event-card">
+                    <div class="event-card" data-event="diskus">
+                        <div class="event-count" id="count-diskus">0</div>
                         <div class="event-title">Diskuswurf</div>
                         <div>Rotation & Power</div>
                     </div>
-                    <div class="event-card">
+                    <div class="event-card" data-event="stab">
+                        <div class="event-count" id="count-stab">0</div>
                         <div class="event-title">Stabhochsprung</div>
                         <div>Technik & Mut</div>
                     </div>
-                    <div class="event-card">
+                    <div class="event-card" data-event="speer">
+                        <div class="event-count" id="count-speer">0</div>
                         <div class="event-title">Speerwurf</div>
                         <div>Anlauf & Wurftechnik</div>
                     </div>
-                    <div class="event-card">
+                    <div class="event-card" data-event="1500m">
+                        <div class="event-count" id="count-1500m">0</div>
                         <div class="event-title">1500m Lauf</div>
                         <div>Ausdauer & Taktik</div>
                     </div>
@@ -425,7 +577,7 @@
             <div class="card">
                 <div class="year-selector">
                     <label for="yearSelect">Jahr auswählen: </label>
-                    <select id="yearSelect" onchange="generateCalendar()">
+                    <select id="yearSelect">
                         <option value="2024">2024</option>
                         <option value="2025" selected>2025</option>
                         <option value="2026">2026</option>
@@ -439,7 +591,7 @@
         <div id="training" class="view">
             <div class="card">
                 <h2>Neues Training planen</h2>
-                <form class="training-form" onsubmit="addTraining(event)">
+                <form class="training-form" id="trainingForm">
                     <div class="form-group">
                         <label for="trainingDate">Datum</label>
                         <input type="date" id="trainingDate" required>
@@ -536,6 +688,23 @@
                 </div>
             </div>
         </div>
+
+        <!-- Disziplin Details -->
+        <div id="eventDetail" class="view">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2 id="eventDetailTitle">Disziplin Details</h2>
+                    <button class="btn-secondary" onclick="showView('overview')">← Zurück zur Übersicht</button>
+                </div>
+                
+                <div id="eventDetailContent"></div>
+                
+                <div style="margin-top: 2rem;">
+                    <button class="btn-primary" onclick="showView('training')" style="margin-right: 1rem;">Neues Training planen</button>
+                    <button class="btn-secondary" onclick="showView('statistics')">Statistiken anzeigen</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal für Training Details -->
@@ -543,7 +712,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="modalTitle">Training Details</h3>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
+                <button class="close-btn" id="modalCloseBtn">&times;</button>
             </div>
             <div id="modalContent"></div>
         </div>
@@ -553,6 +722,16 @@
         // Globale Variablen
         var trainings = [];
         var currentView = 'overview';
+        var selectedMood = '';
+
+        // Mood/Stimmungs-Optionen
+        var moods = {
+            'excellent': '😍',
+            'good': '😊', 
+            'okay': '😐',
+            'tired': '😴',
+            'bad': '😞'
+        };
 
         // Event Namen Mapping
         var eventNames = {
@@ -572,23 +751,76 @@
         };
 
         // App initialisieren
-        document.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('load', function() {
             loadData();
             generateCalendar();
             updateStatistics();
             setDefaultDate();
             initNavigation();
+            initFormHandler();
         });
 
         // Navigation initialisieren
         function initNavigation() {
             var navButtons = document.querySelectorAll('.nav-btn');
             for (var i = 0; i < navButtons.length; i++) {
-                navButtons[i].addEventListener('click', function() {
+                navButtons[i].addEventListener('click', function(e) {
                     var viewName = this.getAttribute('data-view');
                     showView(viewName);
                 });
             }
+        }
+
+        // Form Handler initialisieren
+        function initFormHandler() {
+            var form = document.getElementById('trainingForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    addTraining(e);
+                });
+            }
+            
+            // Jahr-Selector Handler
+            var yearSelect = document.getElementById('yearSelect');
+            if (yearSelect) {
+                yearSelect.addEventListener('change', function() {
+                    generateCalendar();
+                });
+            }
+            
+            // Event Cards Click Handler
+            var eventCards = document.querySelectorAll('.event-card');
+            for (var i = 0; i < eventCards.length; i++) {
+                eventCards[i].addEventListener('click', function() {
+                    var eventType = this.getAttribute('data-event');
+                    showEventDetail(eventType);
+                });
+            }
+            
+            // Modal Close Button
+            var closeBtn = document.getElementById('modalCloseBtn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    closeModal();
+                });
+            }
+            
+            // Modal schließen bei Klick außerhalb
+            var modal = document.getElementById('trainingModal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeModal();
+                    }
+                });
+            }
+            
+            // Escape-Taste für Modal
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
         }
 
         // Navigation zwischen Views
@@ -655,7 +887,7 @@
             updateStatistics();
             
             // Formular zurücksetzen
-            event.target.reset();
+            document.getElementById('trainingForm').reset();
             setDefaultDate();
             
             alert('Training erfolgreich hinzugefügt!');
@@ -731,11 +963,13 @@
                     if (dayTrainings.length > 0) {
                         dayCell.classList.add('has-training');
                         dayCell.title = dayTrainings.length + ' Training(s)';
-                        dayCell.onclick = (function(date, trainings) {
+                        
+                        // Event Listener für Click auf Tage mit Training
+                        dayCell.addEventListener('click', (function(date, trainings) {
                             return function() {
                                 showDayTrainings(date, trainings);
                             };
-                        })(dateStr, dayTrainings);
+                        })(dateStr, dayTrainings));
                     }
                     
                     dayGrid.appendChild(dayCell);
@@ -767,8 +1001,27 @@
                 if (training.goals) {
                     content += '<p><strong>Ziele:</strong> ' + training.goals + '</p>';
                 }
+                
+                // Zeige existierendes Tagebuch falls vorhanden
+                if (training.completed && (training.diaryText || training.mood)) {
+                    content += '<div class="training-diary">';
+                    content += '<strong>📖 Trainingstagebuch:</strong><br>';
+                    if (training.mood) {
+                        content += '<span class="diary-mood">' + (moods[training.mood] || training.mood) + '</span>';
+                    }
+                    if (training.diaryText) {
+                        content += '<div class="diary-text">"' + training.diaryText + '"</div>';
+                    }
+                    content += '</div>';
+                }
+                
                 content += '<div style="margin-top: 1rem;">';
-                content += '<button onclick="completeTraining(' + training.id + ')" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">';
+                if (training.completed) {
+                    content += '<button class="btn-secondary training-edit-btn" data-training-id="' + training.id + '" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-right: 0.5rem;">';
+                    content += 'Tagebuch bearbeiten';
+                    content += '</button>';
+                }
+                content += '<button class="btn-primary training-complete-btn" data-training-id="' + training.id + '" style="padding: 0.5rem 1rem; font-size: 0.9rem;">';
                 content += training.completed ? 'Bearbeiten' : 'Als durchgeführt markieren';
                 content += '</button>';
                 content += '</div>';
@@ -776,6 +1029,25 @@
             }
             
             modalContent.innerHTML = content;
+            
+            // Event Listener für Training Complete Buttons
+            var completeButtons = modalContent.querySelectorAll('.training-complete-btn');
+            for (var i = 0; i < completeButtons.length; i++) {
+                completeButtons[i].addEventListener('click', function() {
+                    var trainingId = parseInt(this.getAttribute('data-training-id'));
+                    completeTraining(trainingId);
+                });
+            }
+            
+            // Event Listener für Tagebuch Edit Buttons
+            var editButtons = modalContent.querySelectorAll('.training-edit-btn');
+            for (var i = 0; i < editButtons.length; i++) {
+                editButtons[i].addEventListener('click', function() {
+                    var trainingId = parseInt(this.getAttribute('data-training-id'));
+                    showDiaryForm(trainingId);
+                });
+            }
+            
             document.getElementById('trainingModal').classList.add('active');
         }
 
@@ -790,19 +1062,150 @@
             }
             
             if (training) {
-                var notes = prompt('Notizen zum Training (optional):');
-                var performance = prompt('Leistung/Ergebnisse (optional):');
+                if (!training.completed) {
+                    var notes = prompt('Notizen zum Training (optional):');
+                    var performance = prompt('Leistung/Ergebnisse (optional):');
+                    
+                    training.completed = true;
+                    training.notes = notes || '';
+                    training.performance = performance || '';
+                    
+                    saveData();
+                    updateStatistics();
+                    generateCalendar();
+                    closeModal();
+                    
+                    alert('Training als durchgeführt markiert! Sie können jetzt ein Trainingstagebuch hinzufügen.');
+                    
+                    // Tagebuch-Formular sofort anzeigen
+                    setTimeout(function() {
+                        showDiaryForm(trainingId);
+                    }, 500);
+                } else {
+                    // Training bearbeiten
+                    var notes = prompt('Notizen zum Training:', training.notes || '');
+                    var performance = prompt('Leistung/Ergebnisse:', training.performance || '');
+                    
+                    training.notes = notes || '';
+                    training.performance = performance || '';
+                    
+                    saveData();
+                    updateStatistics();
+                    generateCalendar();
+                    closeModal();
+                    
+                    alert('Training aktualisiert!');
+                }
+            }
+        }
+
+        // Tagebuch-Formular anzeigen
+        function showDiaryForm(trainingId) {
+            var training = null;
+            for (var i = 0; i < trainings.length; i++) {
+                if (trainings[i].id === trainingId) {
+                    training = trainings[i];
+                    break;
+                }
+            }
+            
+            if (!training) return;
+            
+            var modalTitle = document.getElementById('modalTitle');
+            var modalContent = document.getElementById('modalContent');
+            
+            modalTitle.textContent = 'Trainingstagebuch - ' + (eventNames[training.event] || training.event);
+            
+            var existingMood = training.mood || '';
+            var existingText = training.diaryText || '';
+            
+            var content = '<div class="diary-form">';
+            content += '<h4>📖 Wie war dein Training heute?</h4>';
+            
+            // Stimmungs-Auswahl
+            content += '<div class="mood-selector">';
+            content += '<button class="mood-btn" data-mood="excellent" title="Hervorragend">😍</button>';
+            content += '<button class="mood-btn" data-mood="good" title="Gut">😊</button>';
+            content += '<button class="mood-btn" data-mood="okay" title="Okay">😐</button>';
+            content += '<button class="mood-btn" data-mood="tired" title="Müde">😴</button>';
+            content += '<button class="mood-btn" data-mood="bad" title="Schlecht">😞</button>';
+            content += '</div>';
+            
+            // Text-Bereich
+            content += '<textarea class="diary-textarea" id="diaryText" placeholder="Beschreibe dein Training... Wie hast du dich gefühlt? Was lief gut? Was könnte besser werden?">';
+            content += existingText;
+            content += '</textarea>';
+            
+            // Buttons
+            content += '<div class="diary-buttons">';
+            content += '<button class="btn-secondary" id="cancelDiary">Abbrechen</button>';
+            content += '<button class="btn-primary" id="saveDiary" data-training-id="' + trainingId + '">Tagebuch speichern</button>';
+            content += '</div>';
+            
+            content += '</div>';
+            
+            modalContent.innerHTML = content;
+            
+            // Event Listener für Mood-Buttons
+            var moodButtons = document.querySelectorAll('.mood-btn');
+            selectedMood = existingMood; // Globale Variable setzen
+            
+            for (var i = 0; i < moodButtons.length; i++) {
+                var btn = moodButtons[i];
+                if (btn.getAttribute('data-mood') === existingMood) {
+                    btn.classList.add('selected');
+                }
                 
-                training.completed = true;
-                training.notes = notes || '';
-                training.performance = performance || '';
+                btn.addEventListener('click', function() {
+                    // Alle anderen deselektieren
+                    var allMoodBtns = document.querySelectorAll('.mood-btn');
+                    for (var j = 0; j < allMoodBtns.length; j++) {
+                        allMoodBtns[j].classList.remove('selected');
+                    }
+                    
+                    // Diesen selektieren
+                    this.classList.add('selected');
+                    selectedMood = this.getAttribute('data-mood');
+                });
+            }
+            
+            // Event Listener für Speichern/Abbrechen
+            document.getElementById('saveDiary').addEventListener('click', function() {
+                saveDiary(trainingId);
+            });
+            
+            document.getElementById('cancelDiary').addEventListener('click', function() {
+                closeModal();
+            });
+            
+            document.getElementById('trainingModal').classList.add('active');
+        }
+
+        // Tagebuch speichern
+        function saveDiary(trainingId) {
+            var training = null;
+            for (var i = 0; i < trainings.length; i++) {
+                if (trainings[i].id === trainingId) {
+                    training = trainings[i];
+                    break;
+                }
+            }
+            
+            if (training) {
+                var diaryText = document.getElementById('diaryText').value.trim();
+                
+                training.mood = selectedMood;
+                training.diaryText = diaryText;
                 
                 saveData();
-                updateStatistics();
-                generateCalendar();
+                updateDiary(); // Tagebuch-View aktualisieren
                 closeModal();
                 
-                alert('Training als durchgeführt markiert!');
+                if (selectedMood || diaryText) {
+                    alert('Trainingstagebuch gespeichert! 📖');
+                } else {
+                    alert('Tagebuch geleert.');
+                }
             }
         }
 
@@ -835,4 +1238,278 @@
             }
             
             container.style.display = 'block';
-            noEntries.style.display =
+            noEntries.style.display = 'none';
+            
+            var content = '';
+            for (var i = 0; i < completedTrainings.length; i++) {
+                var training = completedTrainings[i];
+                
+                content += '<div class="training-entry">';
+                content += '<div class="entry-header">';
+                content += '<div class="entry-title">' + (eventNames[training.event] || training.event) + '</div>';
+                content += '<div class="entry-date">' + formatDate(training.date) + ' um ' + training.time + ' Uhr</div>';
+                content += '</div>';
+                content += '<p><strong>Dauer:</strong> ' + training.duration + ' Minuten | <strong>Intensität:</strong> ' + training.intensity + '</p>';
+                if (training.goals) {
+                    content += '<p><strong>Ziele:</strong> ' + training.goals + '</p>';
+                }
+                if (training.performance) {
+                    content += '<p><strong>Leistung:</strong> ' + training.performance + '</p>';
+                }
+                if (training.notes) {
+                    content += '<p><strong>Notizen:</strong> ' + training.notes + '</p>';
+                }
+                
+                // Tagebuch anzeigen
+                if (training.mood || training.diaryText) {
+                    content += '<div class="training-diary">';
+                    content += '<strong>📖 Trainingstagebuch:</strong><br>';
+                    if (training.mood) {
+                        content += '<span class="diary-mood">' + (moods[training.mood] || training.mood) + '</span>';
+                        var moodTitles = {
+                            'excellent': 'Hervorragend',
+                            'good': 'Gut',
+                            'okay': 'Okay', 
+                            'tired': 'Müde',
+                            'bad': 'Schlecht'
+                        };
+                        content += '<span style="color: #64748b; font-size: 0.9rem;"> (' + (moodTitles[training.mood] || '') + ')</span>';
+                    }
+                    if (training.diaryText) {
+                        content += '<div class="diary-text">"' + training.diaryText + '"</div>';
+                    }
+                    content += '</div>';
+                }
+                content += '</div>';
+            }
+            
+            container.innerHTML = content;
+        }
+
+        // Statistiken aktualisieren
+        function updateStatistics() {
+            var totalTrainings = trainings.length;
+            var completedTrainings = [];
+            for (var i = 0; i < trainings.length; i++) {
+                if (trainings[i].completed) {
+                    completedTrainings.push(trainings[i]);
+                }
+            }
+            
+            // Grundstatistiken
+            document.getElementById('totalTrainings').textContent = totalTrainings;
+            
+            // Diese Woche
+            var today = new Date();
+            var weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay() + 1); // Montag
+            var thisWeek = [];
+            for (var i = 0; i < trainings.length; i++) {
+                var trainingDate = new Date(trainings[i].date);
+                if (trainingDate >= weekStart && trainingDate <= today) {
+                    thisWeek.push(trainings[i]);
+                }
+            }
+            document.getElementById('thisWeekTrainings').textContent = thisWeek.length;
+            
+            // Durchschnitt pro Woche
+            if (trainings.length > 0) {
+                var dates = [];
+                for (var i = 0; i < trainings.length; i++) {
+                    dates.push(new Date(trainings[i].date));
+                }
+                var firstTraining = new Date(Math.min.apply(null, dates));
+                var weeksSinceFirst = Math.ceil((today - firstTraining) / (7 * 24 * 60 * 60 * 1000));
+                var avgPerWeek = Math.round(totalTrainings / Math.max(weeksSinceFirst, 1));
+                document.getElementById('avgPerWeek').textContent = avgPerWeek;
+            }
+            
+            // Längste Serie
+            var streak = calculateLongestStreak();
+            document.getElementById('longestStreak').textContent = streak;
+            
+            // Statistiken Seite
+            var totalMinutes = 0;
+            for (var i = 0; i < completedTrainings.length; i++) {
+                totalMinutes += completedTrainings[i].duration;
+            }
+            document.getElementById('totalMinutes').textContent = totalMinutes;
+            
+            var avgDuration = completedTrainings.length > 0 ? Math.round(totalMinutes / completedTrainings.length) : 0;
+            document.getElementById('avgDuration').textContent = avgDuration;
+            
+            // Häufigste Disziplin
+            var eventCounts = {};
+            for (var i = 0; i < trainings.length; i++) {
+                var event = trainings[i].event;
+                eventCounts[event] = (eventCounts[event] || 0) + 1;
+            }
+            
+            var favoriteEvent = '-';
+            var maxCount = 0;
+            for (var event in eventCounts) {
+                if (eventCounts[event] > maxCount) {
+                    maxCount = eventCounts[event];
+                    favoriteEvent = event;
+                }
+            }
+            
+            document.getElementById('favoriteEvent').textContent = eventNames[favoriteEvent] || favoriteEvent;
+            
+            // Monatsdurchschnitt
+            var monthsActive = 1;
+            if (trainings.length > 0) {
+                var dates = [];
+                for (var i = 0; i < trainings.length; i++) {
+                    dates.push(new Date(trainings[i].date));
+                }
+                var firstDate = new Date(Math.min.apply(null, dates));
+                monthsActive = Math.max(1, Math.ceil((today - firstDate) / (30 * 24 * 60 * 60 * 1000)));
+            }
+            document.getElementById('monthlyAvg').textContent = Math.round(totalTrainings / monthsActive);
+            
+            // Disziplin-Breakdown
+            updateEventBreakdown(eventCounts);
+        }
+
+        // Event Breakdown aktualisieren
+        function updateEventBreakdown(eventCounts) {
+            var container = document.getElementById('eventStats');
+            container.innerHTML = '';
+            
+            for (var event in eventCounts) {
+                var count = eventCounts[event];
+                var statCard = document.createElement('div');
+                statCard.className = 'stat-card';
+                statCard.innerHTML = '<div class="stat-number">' + count + '</div>' +
+                                   '<div class="stat-label">' + (eventNames[event] || event) + '</div>';
+                container.appendChild(statCard);
+            }
+        }
+
+        // Längste Trainingsserie berechnen
+        function calculateLongestStreak() {
+            if (trainings.length === 0) return 0;
+            
+            var dates = [];
+            var dateSet = {};
+            for (var i = 0; i < trainings.length; i++) {
+                var date = trainings[i].date;
+                if (!dateSet[date]) {
+                    dates.push(date);
+                    dateSet[date] = true;
+                }
+            }
+            
+            dates.sort();
+            
+            var longestStreak = 1;
+            var currentStreak = 1;
+            
+            for (var i = 1; i < dates.length; i++) {
+                var prevDate = new Date(dates[i - 1]);
+                var currentDate = new Date(dates[i]);
+                var diffDays = (currentDate - prevDate) / (24 * 60 * 60 * 1000);
+                
+                if (diffDays === 1) {
+                    currentStreak++;
+                    longestStreak = Math.max(longestStreak, currentStreak);
+                } else {
+                    currentStreak = 1;
+                }
+            }
+            
+            return longestStreak;
+        }
+
+        // Datum formatieren
+        function formatDate(dateStr) {
+            var date = new Date(dateStr);
+            var options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            return date.toLocaleDateString('de-DE', options);
+        }
+
+        // Daten speichern
+        function saveData() {
+            // In einer echten App würde hier eine Datenbank verwendet
+            // Für Demo-Zwecke verwenden wir Variablen im Speicher
+            console.log('Daten gespeichert:', trainings.length, 'Trainings');
+        }
+
+        // Daten laden
+        function loadData() {
+            // In einer echten App würde hier aus einer Datenbank geladen
+            // Für Demo-Zwecke starten wir mit Beispieldaten
+            trainings = [
+                {
+                    id: 1,
+                    date: '2025-08-25',
+                    time: '10:00',
+                    event: '100m',
+                    duration: 90,
+                    intensity: 'schwer',
+                    goals: 'Startgeschwindigkeit verbessern',
+                    completed: true,
+                    notes: 'Gute Reaktionszeit, Technik verbessert',
+                    performance: '11.2s persönliche Bestzeit',
+                    mood: 'good',
+                    diaryText: 'Training lief super! Hatte heute richtig Lust und konnte meine Bestzeit verbessern. Die neuen Startübungen zeigen Wirkung.'
+                },
+                {
+                    id: 2,
+                    date: '2025-08-26',
+                    time: '15:30',
+                    event: 'weitsprung',
+                    duration: 120,
+                    intensity: 'mittel',
+                    goals: 'Anlauftechnik verfeinern',
+                    completed: true,
+                    notes: 'Rhythmus war heute sehr gut',
+                    performance: '6.85m - neuer Saisonrekord',
+                    mood: 'excellent',
+                    diaryText: 'Wow! Neuer persönlicher Rekord! Der Anlauf saß perfekt und ich hatte ein super Gefühl beim Absprung. Trainer war auch zufrieden.'
+                },
+                {
+                    id: 3,
+                    date: '2025-08-28',
+                    time: '09:00',
+                    event: 'kraft',
+                    duration: 60,
+                    intensity: 'schwer',
+                    goals: 'Explosive Kraft steigern',
+                    completed: false,
+                    notes: '',
+                    performance: '',
+                    mood: '',
+                    diaryText: ''
+                }
+            ];
+            
+            // Nach dem Laden der Daten die Anzeige aktualisieren
+            setTimeout(function() {
+                updateStatistics();
+                generateCalendar();
+            }, 100);
+        }
+
+        // Modal schließen bei Klick außerhalb
+        document.getElementById('trainingModal').addEventListener('click', function(e) {
+            if (e.target === document.getElementById('trainingModal')) {
+                closeModal();
+            }
+        });
+
+        // Enter-Taste im Modal abfangen
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
