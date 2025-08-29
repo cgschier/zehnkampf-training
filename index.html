@@ -551,8 +551,25 @@
 
     <script>
         // Globale Variablen
-        let trainings = [];
-        let currentView = 'overview';
+        var trainings = [];
+        var currentView = 'overview';
+
+        // Event Namen Mapping
+        var eventNames = {
+            '100m': '100m Sprint',
+            'weitsprung': 'Weitsprung',
+            'kugel': 'Kugelstoßen',
+            'hochsprung': 'Hochsprung',
+            '400m': '400m Lauf',
+            'huerden': '110m Hürden',
+            'diskus': 'Diskuswurf',
+            'stab': 'Stabhochsprung',
+            'speer': 'Speerwurf',
+            '1500m': '1500m Lauf',
+            'kraft': 'Krafttraining',
+            'ausdauer': 'Ausdauertraining',
+            'technik': 'Techniktraining'
+        };
 
         // App initialisieren
         document.addEventListener('DOMContentLoaded', function() {
@@ -565,31 +582,37 @@
 
         // Navigation initialisieren
         function initNavigation() {
-            document.querySelectorAll('.nav-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const viewName = this.getAttribute('data-view');
+            var navButtons = document.querySelectorAll('.nav-btn');
+            for (var i = 0; i < navButtons.length; i++) {
+                navButtons[i].addEventListener('click', function() {
+                    var viewName = this.getAttribute('data-view');
                     showView(viewName);
                 });
-            });
+            }
         }
 
         // Navigation zwischen Views
         function showView(viewName) {
             // Alle Views verstecken
-            document.querySelectorAll('.view').forEach(view => {
-                view.classList.remove('active');
-            });
+            var views = document.querySelectorAll('.view');
+            for (var i = 0; i < views.length; i++) {
+                views[i].classList.remove('active');
+            }
             
             // Alle Nav-Buttons deaktivieren
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            var navButtons = document.querySelectorAll('.nav-btn');
+            for (var i = 0; i < navButtons.length; i++) {
+                navButtons[i].classList.remove('active');
+            }
             
             // Gewählte View anzeigen
             document.getElementById(viewName).classList.add('active');
             
             // Entsprechenden Button aktivieren
-            document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
+            var activeButton = document.querySelector('[data-view="' + viewName + '"]');
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
             
             currentView = viewName;
             
@@ -605,7 +628,7 @@
 
         // Standarddatum auf heute setzen
         function setDefaultDate() {
-            const today = new Date().toISOString().split('T')[0];
+            var today = new Date().toISOString().split('T')[0];
             document.getElementById('trainingDate').value = today;
             document.getElementById('trainingTime').value = '10:00';
         }
@@ -614,7 +637,7 @@
         function addTraining(event) {
             event.preventDefault();
             
-            const training = {
+            var training = {
                 id: Date.now(),
                 date: document.getElementById('trainingDate').value,
                 time: document.getElementById('trainingTime').value,
@@ -643,66 +666,76 @@
 
         // Kalender generieren
         function generateCalendar() {
-            const year = parseInt(document.getElementById('yearSelect').value);
-            const container = document.getElementById('calendarContainer');
+            var year = parseInt(document.getElementById('yearSelect').value);
+            var container = document.getElementById('calendarContainer');
             container.innerHTML = '';
             
-            const months = [
+            var months = [
                 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
                 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
             ];
             
-            const weekDays = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+            var weekDays = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
             
-            for (let month = 0; month < 12; month++) {
-                const monthCard = document.createElement('div');
+            for (var month = 0; month < 12; month++) {
+                var monthCard = document.createElement('div');
                 monthCard.className = 'month-card';
                 
-                const monthTitle = document.createElement('div');
+                var monthTitle = document.createElement('div');
                 monthTitle.className = 'month-title';
-                monthTitle.textContent = `${months[month]} ${year}`;
+                monthTitle.textContent = months[month] + ' ' + year;
                 monthCard.appendChild(monthTitle);
                 
                 // Wochentage Header
-                const weekHeader = document.createElement('div');
+                var weekHeader = document.createElement('div');
                 weekHeader.className = 'week-grid';
-                weekDays.forEach(day => {
-                    const dayHeader = document.createElement('div');
-                    dayHeader.textContent = day;
+                for (var d = 0; d < weekDays.length; d++) {
+                    var dayHeader = document.createElement('div');
+                    dayHeader.textContent = weekDays[d];
                     dayHeader.style.fontWeight = 'bold';
                     dayHeader.style.fontSize = '0.8rem';
                     weekHeader.appendChild(dayHeader);
-                });
+                }
                 monthCard.appendChild(weekHeader);
                 
                 // Tage des Monats
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                const firstDayOfMonth = new Date(year, month, 1).getDay();
-                const startDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // Montag = 0
+                var daysInMonth = new Date(year, month + 1, 0).getDate();
+                var firstDayOfMonth = new Date(year, month, 1).getDay();
+                var startDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // Montag = 0
                 
-                const dayGrid = document.createElement('div');
+                var dayGrid = document.createElement('div');
                 dayGrid.className = 'week-grid';
                 
                 // Leere Zellen für den Monatsanfang
-                for (let i = 0; i < startDay; i++) {
-                    const emptyCell = document.createElement('div');
+                for (var i = 0; i < startDay; i++) {
+                    var emptyCell = document.createElement('div');
                     emptyCell.className = 'day-cell';
                     dayGrid.appendChild(emptyCell);
                 }
                 
                 // Tage des Monats
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dayCell = document.createElement('div');
+                for (var day = 1; day <= daysInMonth; day++) {
+                    var dayCell = document.createElement('div');
                     dayCell.className = 'day-cell';
                     dayCell.textContent = day;
                     
-                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const dayTrainings = trainings.filter(t => t.date === dateStr);
+                    var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                    var dayTrainings = [];
+                    
+                    for (var t = 0; t < trainings.length; t++) {
+                        if (trainings[t].date === dateStr) {
+                            dayTrainings.push(trainings[t]);
+                        }
+                    }
                     
                     if (dayTrainings.length > 0) {
                         dayCell.classList.add('has-training');
-                        dayCell.title = `${dayTrainings.length} Training(s)`;
-                        dayCell.onclick = () => showDayTrainings(dateStr, dayTrainings);
+                        dayCell.title = dayTrainings.length + ' Training(s)';
+                        dayCell.onclick = (function(date, trainings) {
+                            return function() {
+                                showDayTrainings(date, trainings);
+                            };
+                        })(dateStr, dayTrainings);
                     }
                     
                     dayGrid.appendChild(dayCell);
@@ -715,246 +748,32 @@
 
         // Trainings für einen Tag anzeigen
         function showDayTrainings(date, dayTrainings) {
-            const modalTitle = document.getElementById('modalTitle');
-            const modalContent = document.getElementById('modalContent');
+            var modalTitle = document.getElementById('modalTitle');
+            var modalContent = document.getElementById('modalContent');
             
-            modalTitle.textContent = `Trainings am ${formatDate(date)}`;
+            modalTitle.textContent = 'Trainings am ' + formatDate(date);
             
-            let content = '';
-            dayTrainings.forEach(training => {
-                const eventNames = {
-                    '100m': '100m Sprint',
-                    'weitsprung': 'Weitsprung',
-                    'kugel': 'Kugelstoßen',
-                    'hochsprung': 'Hochsprung',
-                    '400m': '400m Lauf',
-                    'huerden': '110m Hürden',
-                    'diskus': 'Diskuswurf',
-                    'stab': 'Stabhochsprung',
-                    'speer': 'Speerwurf',
-                    '1500m': '1500m Lauf',
-                    'kraft': 'Krafttraining',
-                    'ausdauer': 'Ausdauertraining',
-                    'technik': 'Techniktraining'
-                };
+            var content = '';
+            for (var i = 0; i < dayTrainings.length; i++) {
+                var training = dayTrainings[i];
                 
-                content += `
-                    <div class="training-entry">
-                        <div class="entry-header">
-                            <div class="entry-title">${eventNames[training.event] || training.event}</div>
-                            <div class="entry-date">${training.time} Uhr</div>
-                        </div>
-                        <p><strong>Dauer:</strong> ${training.duration} Minuten</p>
-                        <p><strong>Intensität:</strong> ${training.intensity}</p>
-                        ${training.goals ? `<p><strong>Ziele:</strong> ${training.goals}</p>` : ''}
-                    ${training.performance ? `<p><strong>Leistung:</strong> ${training.performance}</p>` : ''}
-                    ${training.notes ? `<p><strong>Notizen:</strong> ${training.notes}</p>` : ''}
-                </div>
-            `).join('');
-        }
-
-        // Statistiken aktualisieren
-        function updateStatistics() {
-            const totalTrainings = trainings.length;
-            const completedTrainings = trainings.filter(t => t.completed);
-            
-            // Grundstatistiken
-            document.getElementById('totalTrainings').textContent = totalTrainings;
-            
-            // Diese Woche
-            const today = new Date();
-            const weekStart = new Date(today);
-            weekStart.setDate(today.getDate() - today.getDay() + 1); // Montag
-            const thisWeek = trainings.filter(t => {
-                const trainingDate = new Date(t.date);
-                return trainingDate >= weekStart && trainingDate <= today;
-            });
-            document.getElementById('thisWeekTrainings').textContent = thisWeek.length;
-            
-            // Durchschnitt pro Woche
-            if (trainings.length > 0) {
-                const firstTraining = new Date(Math.min(...trainings.map(t => new Date(t.date))));
-                const weeksSinceFirst = Math.ceil((today - firstTraining) / (7 * 24 * 60 * 60 * 1000));
-                const avgPerWeek = Math.round(totalTrainings / Math.max(weeksSinceFirst, 1));
-                document.getElementById('avgPerWeek').textContent = avgPerWeek;
-            }
-            
-            // Längste Serie
-            const streak = calculateLongestStreak();
-            document.getElementById('longestStreak').textContent = streak;
-            
-            // Statistiken Seite
-            const totalMinutes = completedTrainings.reduce((sum, t) => sum + t.duration, 0);
-            document.getElementById('totalMinutes').textContent = totalMinutes;
-            
-            const avgDuration = completedTrainings.length > 0 ? Math.round(totalMinutes / completedTrainings.length) : 0;
-            document.getElementById('avgDuration').textContent = avgDuration;
-            
-            // Häufigste Disziplin
-            const eventCounts = {};
-            trainings.forEach(t => {
-                eventCounts[t.event] = (eventCounts[t.event] || 0) + 1;
-            });
-            
-            const favoriteEvent = Object.keys(eventCounts).length > 0 ? 
-                Object.keys(eventCounts).reduce((a, b) => eventCounts[a] > eventCounts[b] ? a : b) : '-';
-            
-            const eventNames = {
-                '100m': '100m Sprint',
-                'weitsprung': 'Weitsprung',
-                'kugel': 'Kugelstoßen',
-                'hochsprung': 'Hochsprung',
-                '400m': '400m Lauf',
-                'huerden': '110m Hürden',
-                'diskus': 'Diskuswurf',
-                'stab': 'Stabhochsprung',
-                'speer': 'Speerwurf',
-                '1500m': '1500m Lauf',
-                'kraft': 'Krafttraining',
-                'ausdauer': 'Ausdauertraining',
-                'technik': 'Techniktraining'
-            };
-            
-            document.getElementById('favoriteEvent').textContent = eventNames[favoriteEvent] || favoriteEvent;
-            
-            // Monatsdurchschnitt
-            const monthsActive = trainings.length > 0 ? 
-                Math.max(1, Math.ceil((today - new Date(Math.min(...trainings.map(t => new Date(t.date))))) / (30 * 24 * 60 * 60 * 1000))) : 1;
-            document.getElementById('monthlyAvg').textContent = Math.round(totalTrainings / monthsActive);
-            
-            // Disziplin-Breakdown
-            updateEventBreakdown(eventCounts, eventNames);
-        }
-
-        // Event Breakdown aktualisieren
-        function updateEventBreakdown(eventCounts, eventNames) {
-            const container = document.getElementById('eventStats');
-            container.innerHTML = '';
-            
-            Object.entries(eventCounts).forEach(([event, count]) => {
-                const statCard = document.createElement('div');
-                statCard.className = 'stat-card';
-                statCard.innerHTML = `
-                    <div class="stat-number">${count}</div>
-                    <div class="stat-label">${eventNames[event] || event}</div>
-                `;
-                container.appendChild(statCard);
-            });
-        }
-
-        // Längste Trainingsserie berechnen
-        function calculateLongestStreak() {
-            if (trainings.length === 0) return 0;
-            
-            const dates = [...new Set(trainings.map(t => t.date))].sort();
-            let longestStreak = 1;
-            let currentStreak = 1;
-            
-            for (let i = 1; i < dates.length; i++) {
-                const prevDate = new Date(dates[i - 1]);
-                const currentDate = new Date(dates[i]);
-                const diffDays = (currentDate - prevDate) / (24 * 60 * 60 * 1000);
-                
-                if (diffDays === 1) {
-                    currentStreak++;
-                    longestStreak = Math.max(longestStreak, currentStreak);
-                } else {
-                    currentStreak = 1;
+                content += '<div class="training-entry">';
+                content += '<div class="entry-header">';
+                content += '<div class="entry-title">' + (eventNames[training.event] || training.event) + '</div>';
+                content += '<div class="entry-date">' + training.time + ' Uhr</div>';
+                content += '</div>';
+                content += '<p><strong>Dauer:</strong> ' + training.duration + ' Minuten</p>';
+                content += '<p><strong>Intensität:</strong> ' + training.intensity + '</p>';
+                if (training.goals) {
+                    content += '<p><strong>Ziele:</strong> ' + training.goals + '</p>';
                 }
+                content += '<div style="margin-top: 1rem;">';
+                content += '<button onclick="completeTraining(' + training.id + ')" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">';
+                content += training.completed ? 'Bearbeiten' : 'Als durchgeführt markieren';
+                content += '</button>';
+                content += '</div>';
+                content += '</div>';
             }
-            
-            return longestStreak;
-        }
-
-        // Datum formatieren
-        function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('de-DE', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
-
-        // Daten speichern
-        function saveData() {
-            const data = {
-                trainings: trainings,
-                lastUpdated: new Date().toISOString()
-            };
-            // In einer echten App würde hier eine Datenbank verwendet
-            // Für Demo-Zwecke verwenden wir Variablen im Speicher
-        }
-
-        // Daten laden
-        function loadData() {
-            // In einer echten App würde hier aus einer Datenbank geladen
-            // Für Demo-Zwecke starten wir mit Beispieldaten
-            trainings = [
-                {
-                    id: 1,
-                    date: '2025-08-25',
-                    time: '10:00',
-                    event: '100m',
-                    duration: 90,
-                    intensity: 'schwer',
-                    goals: 'Startgeschwindigkeit verbessern',
-                    completed: true,
-                    notes: 'Gute Reaktionszeit, Technik verbessert',
-                    performance: '11.2s persönliche Bestzeit'
-                },
-                {
-                    id: 2,
-                    date: '2025-08-26',
-                    time: '15:30',
-                    event: 'weitsprung',
-                    duration: 120,
-                    intensity: 'mittel',
-                    goals: 'Anlauftechnik verfeinern',
-                    completed: true,
-                    notes: 'Rhythmus war heute sehr gut',
-                    performance: '6.85m - neuer Saisonrekord'
-                },
-                {
-                    id: 3,
-                    date: '2025-08-28',
-                    time: '09:00',
-                    event: 'kraft',
-                    duration: 60,
-                    intensity: 'schwer',
-                    goals: 'Explosive Kraft steigern',
-                    completed: false,
-                    notes: '',
-                    performance: ''
-                }
-            ];
-        }
-
-        // Modal schließen bei Klick außerhalb
-        document.getElementById('trainingModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-
-        // Enter-Taste im Modal abfangen
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-        });
-    </script>
-</body>
-</html><strong>Ziele:</strong> ${training.goals}</p>` : ''}
-                        <div style="margin-top: 1rem;">
-                            <button onclick="completeTraining(${training.id})" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-                                ${training.completed ? 'Bearbeiten' : 'Als durchgeführt markieren'}
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
             
             modalContent.innerHTML = content;
             document.getElementById('trainingModal').classList.add('active');
@@ -962,10 +781,17 @@
 
         // Training als durchgeführt markieren
         function completeTraining(trainingId) {
-            const training = trainings.find(t => t.id === trainingId);
+            var training = null;
+            for (var i = 0; i < trainings.length; i++) {
+                if (trainings[i].id === trainingId) {
+                    training = trainings[i];
+                    break;
+                }
+            }
+            
             if (training) {
-                const notes = prompt('Notizen zum Training (optional):');
-                const performance = prompt('Leistung/Ergebnisse (optional):');
+                var notes = prompt('Notizen zum Training (optional):');
+                var performance = prompt('Leistung/Ergebnisse (optional):');
                 
                 training.completed = true;
                 training.notes = notes || '';
@@ -987,10 +813,20 @@
 
         // Tagebuch aktualisieren
         function updateDiary() {
-            const container = document.getElementById('diaryEntries');
-            const noEntries = document.getElementById('noDiaryEntries');
+            var container = document.getElementById('diaryEntries');
+            var noEntries = document.getElementById('noDiaryEntries');
             
-            const completedTrainings = trainings.filter(t => t.completed).sort((a, b) => new Date(b.date) - new Date(a.date));
+            var completedTrainings = [];
+            for (var i = 0; i < trainings.length; i++) {
+                if (trainings[i].completed) {
+                    completedTrainings.push(trainings[i]);
+                }
+            }
+            
+            // Sortieren nach Datum (neueste zuerst)
+            completedTrainings.sort(function(a, b) {
+                return new Date(b.date) - new Date(a.date);
+            });
             
             if (completedTrainings.length === 0) {
                 container.style.display = 'none';
@@ -999,29 +835,4 @@
             }
             
             container.style.display = 'block';
-            noEntries.style.display = 'none';
-            
-            const eventNames = {
-                '100m': '100m Sprint',
-                'weitsprung': 'Weitsprung',
-                'kugel': 'Kugelstoßen',
-                'hochsprung': 'Hochsprung',
-                '400m': '400m Lauf',
-                'huerden': '110m Hürden',
-                'diskus': 'Diskuswurf',
-                'stab': 'Stabhochsprung',
-                'speer': 'Speerwurf',
-                '1500m': '1500m Lauf',
-                'kraft': 'Krafttraining',
-                'ausdauer': 'Ausdauertraining',
-                'technik': 'Techniktraining'
-            };
-            
-            container.innerHTML = completedTrainings.map(training => `
-                <div class="training-entry">
-                    <div class="entry-header">
-                        <div class="entry-title">${eventNames[training.event] || training.event}</div>
-                        <div class="entry-date">${formatDate(training.date)} um ${training.time} Uhr</div>
-                    </div>
-                    <p><strong>Dauer:</strong> ${training.duration} Minuten | <strong>Intensität:</strong> ${training.intensity}</p>
-                    ${training.goals ? `<p>
+            noEntries.style.display =
