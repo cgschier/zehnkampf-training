@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zehnkampf Training Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: #764ba2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .year-selector {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .year-selector select {
+            padding: 0.5rem 1rem;
+            font-size: 1.1rem;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .month-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 1rem;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .month-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .day-cell {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem;
+            text-align: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .day-cell:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .day-cell.has-training {
+            background: #4ade80;
+            color: #1f2937;
+            font-weight: bold;
+        }
+
+        .training-form {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .training-entry {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .entry-title {
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .entry-date {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .decathlon-events {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .event-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 1rem;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .event-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .close-btn:hover {
+            color: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🏃‍♂️ Zehnkampf Training Manager</div>
+        <div class="nav-buttons">
+            <button class="nav-btn active" data-view="overview">Übersicht</button>
+            <button class="nav-btn" data-view="calendar">Kalender</button>
+            <button class="nav-btn" data-view="training">Training</button>
+            <button class="nav-btn" data-view="diary">Tagebuch</button>
+            <button class="nav-btn" data-view="statistics">Statistiken</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Übersicht -->
+        <div id="overview" class="view active">
+            <div class="card">
+                <h2>Willkommen zu deinem Zehnkampf Training Manager</h2>
+                <p style="margin: 1rem 0;">Verwalte dein Training professionell mit detaillierter Planung und Dokumentation.</p>
+                
+                <div class="decathlon-events">
+                    <div class="event-card">
+                        <div class="event-title">100m Sprint</div>
+                        <div>Explosive Schnelligkeit</div>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-title">Weitsprung</div>
+                        <div>Anlauf & Technik</div>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-title">Kugelstoßen</div>
+                        <div>Kraft & Koordination</div>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-title">Hochsprung</div>
+                        <div>Technik & Sprungkraft</div>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-title">400m Lauf</div>
+                        <div>Ausdauer & Tempo</div>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-title">110m Hürden</div>
+                        <div>Rhythmus & Technik</div>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-title">Diskuswurf</div>
+                        <div>Rotation & Power</div>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-title">Stabhochsprung</div>
+                        <div>Technik & Mut</div>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-title">Speerwurf</div>
+                        <div>Anlauf & Wurftechnik</div>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-title">1500m Lauf</div>
+                        <div>Ausdauer & Taktik</div>
+                    </div>
+                </div>
+
+                <div class="statistics">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalTrainings">0</div>
+                        <div class="stat-label">Trainingseinheiten</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="thisWeekTrainings">0</div>
+                        <div class="stat-label">Diese Woche</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgPerWeek">0</div>
+                        <div class="stat-label">Ø pro Woche</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="longestStreak">0</div>
+                        <div class="stat-label">Längste Serie (Tage)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kalender -->
+        <div id="calendar" class="view">
+            <div class="card">
+                <div class="year-selector">
+                    <label for="yearSelect">Jahr auswählen: </label>
+                    <select id="yearSelect" onchange="generateCalendar()">
+                        <option value="2024">2024</option>
+                        <option value="2025" selected>2025</option>
+                        <option value="2026">2026</option>
+                    </select>
+                </div>
+                <div id="calendarContainer" class="calendar-grid"></div>
+            </div>
+        </div>
+
+        <!-- Training planen -->
+        <div id="training" class="view">
+            <div class="card">
+                <h2>Neues Training planen</h2>
+                <form class="training-form" onsubmit="addTraining(event)">
+                    <div class="form-group">
+                        <label for="trainingDate">Datum</label>
+                        <input type="date" id="trainingDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="trainingTime">Uhrzeit</label>
+                        <input type="time" id="trainingTime" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="trainingEvent">Zehnkampf Disziplin</label>
+                        <select id="trainingEvent" required>
+                            <option value="">Bitte wählen...</option>
+                            <option value="100m">100m Sprint</option>
+                            <option value="weitsprung">Weitsprung</option>
+                            <option value="kugel">Kugelstoßen</option>
+                            <option value="hochsprung">Hochsprung</option>
+                            <option value="400m">400m Lauf</option>
+                            <option value="huerden">110m Hürden</option>
+                            <option value="diskus">Diskuswurf</option>
+                            <option value="stab">Stabhochsprung</option>
+                            <option value="speer">Speerwurf</option>
+                            <option value="1500m">1500m Lauf</option>
+                            <option value="kraft">Krafttraining</option>
+                            <option value="ausdauer">Ausdauertraining</option>
+                            <option value="technik">Techniktraining</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="trainingDuration">Dauer (Minuten)</label>
+                        <input type="number" id="trainingDuration" min="30" max="300" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="trainingIntensity">Intensität</label>
+                        <select id="trainingIntensity" required>
+                            <option value="">Bitte wählen...</option>
+                            <option value="leicht">Leicht</option>
+                            <option value="mittel">Mittel</option>
+                            <option value="schwer">Schwer</option>
+                            <option value="maximal">Maximal</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="trainingGoals">Trainingsziele</label>
+                        <textarea id="trainingGoals" rows="3" placeholder="Was möchtest du in diesem Training erreichen?"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Training hinzufügen</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Trainingstagebuch -->
+        <div id="diary" class="view">
+            <div class="card">
+                <h2>Trainingstagebuch</h2>
+                <div id="diaryEntries"></div>
+                <div id="noDiaryEntries" style="text-align: center; color: #6b7280; padding: 2rem;">
+                    Noch keine Trainingseinträge vorhanden. Füge dein erstes Training hinzu!
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiken -->
+        <div id="statistics" class="view">
+            <div class="card">
+                <h2>Trainingsstatistiken</h2>
+                <div class="statistics">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalMinutes">0</div>
+                        <div class="stat-label">Gesamte Trainingsminuten</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgDuration">0</div>
+                        <div class="stat-label">Ø Trainingsdauer (Min)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="favoriteEvent">-</div>
+                        <div class="stat-label">Häufigste Disziplin</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="monthlyAvg">0</div>
+                        <div class="stat-label">Ø Trainings/Monat</div>
+                    </div>
+                </div>
+                
+                <div id="eventBreakdown" style="margin-top: 2rem;">
+                    <h3>Trainingsverteilung nach Disziplinen</h3>
+                    <div id="eventStats" class="statistics"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Training Details -->
+    <div id="trainingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Training Details</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Globale Variablen
+        let trainings = [];
+        let currentView = 'overview';
+
+        // App initialisieren
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            generateCalendar();
+            updateStatistics();
+            setDefaultDate();
+            initNavigation();
+        });
+
+        // Navigation initialisieren
+        function initNavigation() {
+            document.querySelectorAll('.nav-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const viewName = this.getAttribute('data-view');
+                    showView(viewName);
+                });
+            });
+        }
+
+        // Navigation zwischen Views
+        function showView(viewName) {
+            // Alle Views verstecken
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Alle Nav-Buttons deaktivieren
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Gewählte View anzeigen
+            document.getElementById(viewName).classList.add('active');
+            
+            // Entsprechenden Button aktivieren
+            document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
+            
+            currentView = viewName;
+            
+            // View-spezifische Aktionen
+            if (viewName === 'diary') {
+                updateDiary();
+            } else if (viewName === 'calendar') {
+                generateCalendar();
+            } else if (viewName === 'statistics') {
+                updateStatistics();
+            }
+        }
+
+        // Standarddatum auf heute setzen
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('trainingDate').value = today;
+            document.getElementById('trainingTime').value = '10:00';
+        }
+
+        // Training hinzufügen
+        function addTraining(event) {
+            event.preventDefault();
+            
+            const training = {
+                id: Date.now(),
+                date: document.getElementById('trainingDate').value,
+                time: document.getElementById('trainingTime').value,
+                event: document.getElementById('trainingEvent').value,
+                duration: parseInt(document.getElementById('trainingDuration').value),
+                intensity: document.getElementById('trainingIntensity').value,
+                goals: document.getElementById('trainingGoals').value,
+                completed: false,
+                notes: '',
+                performance: ''
+            };
+            
+            trainings.push(training);
+            saveData();
+            updateStatistics();
+            
+            // Formular zurücksetzen
+            event.target.reset();
+            setDefaultDate();
+            
+            alert('Training erfolgreich hinzugefügt!');
+            
+            // Zur Übersicht wechseln
+            showView('overview');
+        }
+
+        // Kalender generieren
+        function generateCalendar() {
+            const year = parseInt(document.getElementById('yearSelect').value);
+            const container = document.getElementById('calendarContainer');
+            container.innerHTML = '';
+            
+            const months = [
+                'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+                'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+            ];
+            
+            const weekDays = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+            
+            for (let month = 0; month < 12; month++) {
+                const monthCard = document.createElement('div');
+                monthCard.className = 'month-card';
+                
+                const monthTitle = document.createElement('div');
+                monthTitle.className = 'month-title';
+                monthTitle.textContent = `${months[month]} ${year}`;
+                monthCard.appendChild(monthTitle);
+                
+                // Wochentage Header
+                const weekHeader = document.createElement('div');
+                weekHeader.className = 'week-grid';
+                weekDays.forEach(day => {
+                    const dayHeader = document.createElement('div');
+                    dayHeader.textContent = day;
+                    dayHeader.style.fontWeight = 'bold';
+                    dayHeader.style.fontSize = '0.8rem';
+                    weekHeader.appendChild(dayHeader);
+                });
+                monthCard.appendChild(weekHeader);
+                
+                // Tage des Monats
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const firstDayOfMonth = new Date(year, month, 1).getDay();
+                const startDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // Montag = 0
+                
+                const dayGrid = document.createElement('div');
+                dayGrid.className = 'week-grid';
+                
+                // Leere Zellen für den Monatsanfang
+                for (let i = 0; i < startDay; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'day-cell';
+                    dayGrid.appendChild(emptyCell);
+                }
+                
+                // Tage des Monats
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.className = 'day-cell';
+                    dayCell.textContent = day;
+                    
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const dayTrainings = trainings.filter(t => t.date === dateStr);
+                    
+                    if (dayTrainings.length > 0) {
+                        dayCell.classList.add('has-training');
+                        dayCell.title = `${dayTrainings.length} Training(s)`;
+                        dayCell.onclick = () => showDayTrainings(dateStr, dayTrainings);
+                    }
+                    
+                    dayGrid.appendChild(dayCell);
+                }
+                
+                monthCard.appendChild(dayGrid);
+                container.appendChild(monthCard);
+            }
+        }
+
+        // Trainings für einen Tag anzeigen
+        function showDayTrainings(date, dayTrainings) {
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalTitle.textContent = `Trainings am ${formatDate(date)}`;
+            
+            let content = '';
+            dayTrainings.forEach(training => {
+                const eventNames = {
+                    '100m': '100m Sprint',
+                    'weitsprung': 'Weitsprung',
+                    'kugel': 'Kugelstoßen',
+                    'hochsprung': 'Hochsprung',
+                    '400m': '400m Lauf',
+                    'huerden': '110m Hürden',
+                    'diskus': 'Diskuswurf',
+                    'stab': 'Stabhochsprung',
+                    'speer': 'Speerwurf',
+                    '1500m': '1500m Lauf',
+                    'kraft': 'Krafttraining',
+                    'ausdauer': 'Ausdauertraining',
+                    'technik': 'Techniktraining'
+                };
+                
+                content += `
+                    <div class="training-entry">
+                        <div class="entry-header">
+                            <div class="entry-title">${eventNames[training.event] || training.event}</div>
+                            <div class="entry-date">${training.time} Uhr</div>
+                        </div>
+                        <p><strong>Dauer:</strong> ${training.duration} Minuten</p>
+                        <p><strong>Intensität:</strong> ${training.intensity}</p>
+                        ${training.goals ? `<p><strong>Ziele:</strong> ${training.goals}</p>` : ''}
+                    ${training.performance ? `<p><strong>Leistung:</strong> ${training.performance}</p>` : ''}
+                    ${training.notes ? `<p><strong>Notizen:</strong> ${training.notes}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Statistiken aktualisieren
+        function updateStatistics() {
+            const totalTrainings = trainings.length;
+            const completedTrainings = trainings.filter(t => t.completed);
+            
+            // Grundstatistiken
+            document.getElementById('totalTrainings').textContent = totalTrainings;
+            
+            // Diese Woche
+            const today = new Date();
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay() + 1); // Montag
+            const thisWeek = trainings.filter(t => {
+                const trainingDate = new Date(t.date);
+                return trainingDate >= weekStart && trainingDate <= today;
+            });
+            document.getElementById('thisWeekTrainings').textContent = thisWeek.length;
+            
+            // Durchschnitt pro Woche
+            if (trainings.length > 0) {
+                const firstTraining = new Date(Math.min(...trainings.map(t => new Date(t.date))));
+                const weeksSinceFirst = Math.ceil((today - firstTraining) / (7 * 24 * 60 * 60 * 1000));
+                const avgPerWeek = Math.round(totalTrainings / Math.max(weeksSinceFirst, 1));
+                document.getElementById('avgPerWeek').textContent = avgPerWeek;
+            }
+            
+            // Längste Serie
+            const streak = calculateLongestStreak();
+            document.getElementById('longestStreak').textContent = streak;
+            
+            // Statistiken Seite
+            const totalMinutes = completedTrainings.reduce((sum, t) => sum + t.duration, 0);
+            document.getElementById('totalMinutes').textContent = totalMinutes;
+            
+            const avgDuration = completedTrainings.length > 0 ? Math.round(totalMinutes / completedTrainings.length) : 0;
+            document.getElementById('avgDuration').textContent = avgDuration;
+            
+            // Häufigste Disziplin
+            const eventCounts = {};
+            trainings.forEach(t => {
+                eventCounts[t.event] = (eventCounts[t.event] || 0) + 1;
+            });
+            
+            const favoriteEvent = Object.keys(eventCounts).length > 0 ? 
+                Object.keys(eventCounts).reduce((a, b) => eventCounts[a] > eventCounts[b] ? a : b) : '-';
+            
+            const eventNames = {
+                '100m': '100m Sprint',
+                'weitsprung': 'Weitsprung',
+                'kugel': 'Kugelstoßen',
+                'hochsprung': 'Hochsprung',
+                '400m': '400m Lauf',
+                'huerden': '110m Hürden',
+                'diskus': 'Diskuswurf',
+                'stab': 'Stabhochsprung',
+                'speer': 'Speerwurf',
+                '1500m': '1500m Lauf',
+                'kraft': 'Krafttraining',
+                'ausdauer': 'Ausdauertraining',
+                'technik': 'Techniktraining'
+            };
+            
+            document.getElementById('favoriteEvent').textContent = eventNames[favoriteEvent] || favoriteEvent;
+            
+            // Monatsdurchschnitt
+            const monthsActive = trainings.length > 0 ? 
+                Math.max(1, Math.ceil((today - new Date(Math.min(...trainings.map(t => new Date(t.date))))) / (30 * 24 * 60 * 60 * 1000))) : 1;
+            document.getElementById('monthlyAvg').textContent = Math.round(totalTrainings / monthsActive);
+            
+            // Disziplin-Breakdown
+            updateEventBreakdown(eventCounts, eventNames);
+        }
+
+        // Event Breakdown aktualisieren
+        function updateEventBreakdown(eventCounts, eventNames) {
+            const container = document.getElementById('eventStats');
+            container.innerHTML = '';
+            
+            Object.entries(eventCounts).forEach(([event, count]) => {
+                const statCard = document.createElement('div');
+                statCard.className = 'stat-card';
+                statCard.innerHTML = `
+                    <div class="stat-number">${count}</div>
+                    <div class="stat-label">${eventNames[event] || event}</div>
+                `;
+                container.appendChild(statCard);
+            });
+        }
+
+        // Längste Trainingsserie berechnen
+        function calculateLongestStreak() {
+            if (trainings.length === 0) return 0;
+            
+            const dates = [...new Set(trainings.map(t => t.date))].sort();
+            let longestStreak = 1;
+            let currentStreak = 1;
+            
+            for (let i = 1; i < dates.length; i++) {
+                const prevDate = new Date(dates[i - 1]);
+                const currentDate = new Date(dates[i]);
+                const diffDays = (currentDate - prevDate) / (24 * 60 * 60 * 1000);
+                
+                if (diffDays === 1) {
+                    currentStreak++;
+                    longestStreak = Math.max(longestStreak, currentStreak);
+                } else {
+                    currentStreak = 1;
+                }
+            }
+            
+            return longestStreak;
+        }
+
+        // Datum formatieren
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('de-DE', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Daten speichern
+        function saveData() {
+            const data = {
+                trainings: trainings,
+                lastUpdated: new Date().toISOString()
+            };
+            // In einer echten App würde hier eine Datenbank verwendet
+            // Für Demo-Zwecke verwenden wir Variablen im Speicher
+        }
+
+        // Daten laden
+        function loadData() {
+            // In einer echten App würde hier aus einer Datenbank geladen
+            // Für Demo-Zwecke starten wir mit Beispieldaten
+            trainings = [
+                {
+                    id: 1,
+                    date: '2025-08-25',
+                    time: '10:00',
+                    event: '100m',
+                    duration: 90,
+                    intensity: 'schwer',
+                    goals: 'Startgeschwindigkeit verbessern',
+                    completed: true,
+                    notes: 'Gute Reaktionszeit, Technik verbessert',
+                    performance: '11.2s persönliche Bestzeit'
+                },
+                {
+                    id: 2,
+                    date: '2025-08-26',
+                    time: '15:30',
+                    event: 'weitsprung',
+                    duration: 120,
+                    intensity: 'mittel',
+                    goals: 'Anlauftechnik verfeinern',
+                    completed: true,
+                    notes: 'Rhythmus war heute sehr gut',
+                    performance: '6.85m - neuer Saisonrekord'
+                },
+                {
+                    id: 3,
+                    date: '2025-08-28',
+                    time: '09:00',
+                    event: 'kraft',
+                    duration: 60,
+                    intensity: 'schwer',
+                    goals: 'Explosive Kraft steigern',
+                    completed: false,
+                    notes: '',
+                    performance: ''
+                }
+            ];
+        }
+
+        // Modal schließen bei Klick außerhalb
+        document.getElementById('trainingModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Enter-Taste im Modal abfangen
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html><strong>Ziele:</strong> ${training.goals}</p>` : ''}
+                        <div style="margin-top: 1rem;">
+                            <button onclick="completeTraining(${training.id})" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                                ${training.completed ? 'Bearbeiten' : 'Als durchgeführt markieren'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            modalContent.innerHTML = content;
+            document.getElementById('trainingModal').classList.add('active');
+        }
+
+        // Training als durchgeführt markieren
+        function completeTraining(trainingId) {
+            const training = trainings.find(t => t.id === trainingId);
+            if (training) {
+                const notes = prompt('Notizen zum Training (optional):');
+                const performance = prompt('Leistung/Ergebnisse (optional):');
+                
+                training.completed = true;
+                training.notes = notes || '';
+                training.performance = performance || '';
+                
+                saveData();
+                updateStatistics();
+                generateCalendar();
+                closeModal();
+                
+                alert('Training als durchgeführt markiert!');
+            }
+        }
+
+        // Modal schließen
+        function closeModal() {
+            document.getElementById('trainingModal').classList.remove('active');
+        }
+
+        // Tagebuch aktualisieren
+        function updateDiary() {
+            const container = document.getElementById('diaryEntries');
+            const noEntries = document.getElementById('noDiaryEntries');
+            
+            const completedTrainings = trainings.filter(t => t.completed).sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (completedTrainings.length === 0) {
+                container.style.display = 'none';
+                noEntries.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'block';
+            noEntries.style.display = 'none';
+            
+            const eventNames = {
+                '100m': '100m Sprint',
+                'weitsprung': 'Weitsprung',
+                'kugel': 'Kugelstoßen',
+                'hochsprung': 'Hochsprung',
+                '400m': '400m Lauf',
+                'huerden': '110m Hürden',
+                'diskus': 'Diskuswurf',
+                'stab': 'Stabhochsprung',
+                'speer': 'Speerwurf',
+                '1500m': '1500m Lauf',
+                'kraft': 'Krafttraining',
+                'ausdauer': 'Ausdauertraining',
+                'technik': 'Techniktraining'
+            };
+            
+            container.innerHTML = completedTrainings.map(training => `
+                <div class="training-entry">
+                    <div class="entry-header">
+                        <div class="entry-title">${eventNames[training.event] || training.event}</div>
+                        <div class="entry-date">${formatDate(training.date)} um ${training.time} Uhr</div>
+                    </div>
+                    <p><strong>Dauer:</strong> ${training.duration} Minuten | <strong>Intensität:</strong> ${training.intensity}</p>
+                    ${training.goals ? `<p>
